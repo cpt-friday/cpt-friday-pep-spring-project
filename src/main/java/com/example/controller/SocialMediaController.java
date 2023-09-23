@@ -1,16 +1,18 @@
 package com.example.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.*;
-import com.example.repository.AccountRepository;
 import com.example.service.*;
 
 /**
@@ -50,7 +52,38 @@ public class SocialMediaController {
         return ResponseEntity.status(200).body(logged);
     }
 
-    //messages
-    //messages/{message_id}
-    //accounts/{account_id}/messages
+    //failed blank message test
+    @PostMapping("messages")
+    public ResponseEntity<Message> createMessage(@RequestBody Message msg){
+        if(!as.accountExists(msg.getPosted_by())) return ResponseEntity.status(400).build();
+        Optional<Message> opt = ms.addMessage(msg);
+        return opt.isEmpty() ? (
+            ResponseEntity.status(400).build()
+        ) : ResponseEntity.status(200).body(opt.get());
+    }
+
+    @GetMapping("messages")
+    public ResponseEntity<List<Message>> getAllMessages(){
+        return ResponseEntity.status(200).body(ms.getAllMessages());
+    }
+
+    //failed both tests
+    @GetMapping("messages/{message_id}")
+    public ResponseEntity<Message> getMessageByID(@PathVariable int messageID){
+        Optional<Message> opt = Optional.ofNullable(ms.getMessageByID(messageID));
+        return opt.isEmpty() ? (
+            ResponseEntity.status(200).build()
+        ) : ResponseEntity.status(200).body(opt.get());
+    }
+
+    /**
+     * TODO:
+     *      Methods:
+     *          - delete message given ID
+     *          - update message given ID
+     *          - get all messages given accountID
+     *      Debug:
+     *          - fix blank message create
+     *          - fix get message by ID
+     */
 }

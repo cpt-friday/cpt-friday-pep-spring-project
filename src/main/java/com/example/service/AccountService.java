@@ -36,6 +36,10 @@ public class AccountService {
         return ar.existsByUsername(username);
     }
 
+    public boolean accountExists(int id){
+        return ar.existsById(id);
+    }
+
     public Optional<Account> getAccountByUsername(String username){
         return ar.findByUsername(username);
     }

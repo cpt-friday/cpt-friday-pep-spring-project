@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.entity.Message;
+import com.example.repository.AccountRepository;
 import com.example.repository.MessageRepository;
 
 @Service
@@ -17,8 +18,9 @@ public class MessageService {
         this.mr = mr;
     }
 
-    public Message addMessage(Message msg){
-        return mr.save(msg);
+    public Optional<Message> addMessage(Message msg){
+        if(msg.getMessage_text().isBlank() || msg.getMessage_text().length() >= 255) return null;
+        else return Optional.of(mr.save(msg));
     }
 
     public List<Message> getAllMessages(){
