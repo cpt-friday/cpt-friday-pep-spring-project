@@ -35,60 +35,67 @@ public class SocialMediaController {
         this.ms = ms;
     }
 
-    @PostMapping("register")
-    public ResponseEntity<Account> register(@RequestBody Account acc){
-        if(as.accountNameExists(acc.getUsername())){
-            return ResponseEntity.status(409).build();
-        }
-        Optional<Account> opt = as.addAccount(acc);
-        return opt.isEmpty() ? (
-            ResponseEntity.status(400).build()
-        ) : ResponseEntity.status(200).body(opt.get());
+    // @PostMapping("register")
+    // public ResponseEntity<Account> register(@RequestBody Account acc){
+    //     if(as.accountNameExists(acc.getUsername())){
+    //         return ResponseEntity.status(409).build();
+    //     }
+    //     Optional<Account> opt = as.addAccount(acc);
+    //     return opt.isEmpty() ? (
+    //         ResponseEntity.status(400).build()
+    //     ) : ResponseEntity.status(200).body(opt.get());
         
-    }
+    // }
 
-    @PostMapping("login")
-    public ResponseEntity<Account> login(@RequestBody Account acc){
-        Optional<Account> opt = as.getAccountByUsername(acc.getUsername());
-        if(opt.isEmpty()) return ResponseEntity.status(401).build();
-        Account logged = opt.get();
-        if(!logged.getPassword().equals(acc.getPassword())) return ResponseEntity.status(401).build();
-        return ResponseEntity.status(200).body(logged);
-    }
+    // @PostMapping("login")
+    // public ResponseEntity<Account> login(@RequestBody Account acc){
+    //     Optional<Account> opt = as.getAccountByUsername(acc.getUsername());
+    //     if(opt.isEmpty()) return ResponseEntity.status(401).build();
+    //     Account logged = opt.get();
+    //     if(!logged.getPassword().equals(acc.getPassword())) return ResponseEntity.status(401).build();
+    //     return ResponseEntity.status(200).body(logged);
+    // }
 
-    //failed blank message test
-    @PostMapping("messages")
-    public ResponseEntity<Message> createMessage(@RequestBody Message msg){
-        if(!as.accountExists(msg.getPosted_by())) return ResponseEntity.status(400).build();
-        Optional<Message> opt = ms.addMessage(msg);
-        return opt.isEmpty() ? (
-            ResponseEntity.status(400).build()
-        ) : ResponseEntity.status(200).body(opt.get());
-    }
+    // //failed blank message test
+    // @PostMapping("messages")
+    // public ResponseEntity<Message> createMessage(@RequestBody Message msg){
+    //     if(!as.accountExists(msg.getPosted_by())) return ResponseEntity.status(400).build();
+    //     Optional<Message> opt = ms.addMessage(msg);
+    //     return opt.isEmpty() ? (
+    //         ResponseEntity.status(400).build()
+    //     ) : ResponseEntity.status(200).body(opt.get());
+    // }
 
-    @GetMapping("messages")
-    public ResponseEntity<List<Message>> getAllMessages(){
-        return ResponseEntity.status(200).body(ms.getAllMessages());
-    }
+    // @GetMapping("messages")
+    // public ResponseEntity<List<Message>> getAllMessages(){
+    //     return ResponseEntity.status(200).body(ms.getAllMessages());
+    // }
 
-    //failed both tests
-    @GetMapping("messages/{message_id}")
-    public ResponseEntity<Message> getMessageByID(@PathVariable int messageID){
-        //TODO
-    }
+    // //failed both tests
+    // @GetMapping("messages/{message_id}")
+    // public ResponseEntity<Message> getMessageByID(@PathVariable int messageID){
+    //     //TODO
+    // }
 
-    @DeleteMapping("messages/{message_id}")
-    public ResponseEntity<Message> deleteMessageByID(@PathVariable int message_id){
-        Optional<Message> delMSG = ms.getMessageByID(message_id);
-        if(delMSG.isEmpty()) return ResponseEntity.status(200).build();
-        ms.deleteMessage(message_id);
-        return ResponseEntity.status(200).body(delMSG.get());
-    }
+    // @DeleteMapping("messages/{message_id}")
+    // public ResponseEntity<Message> deleteMessageByID(@PathVariable int message_id){
+    //     Optional<Message> delMSG = ms.getMessageByID(message_id);
+    //     if(delMSG.isEmpty()) return ResponseEntity.status(200).build();
+    //     ms.deleteMessage(message_id);
+    //     return ResponseEntity.status(200).body(delMSG.get());
+    // }
 
-    @PatchMapping("messages/{message_id}")
-    public ResponseEntity<Message> updateMessageByID(@PathVariable int message_id, @RequestBody Message newMSG){
+    // @PatchMapping("messages/{message_id}")
+    // public ResponseEntity<Message> updateMessageByID(@PathVariable int message_id, @RequestBody Message newMSG){
 
-    }
+    // }
+
+    // @GetMapping("accounts/{account_id}/messages")
+    // public ResponseEntity<Message> getMessagesFromAccount(@PathVariable int account_id){
+
+    // }
+
+
     /**
      * TODO:
      *      Methods:
@@ -97,5 +104,11 @@ public class SocialMediaController {
      *      Debug:
      *          - fix blank message create
      *          - fix get message by ID
+     * 
+     * 
+     * 
+     *      Strategies:
+     *          - Make ResponseEntity and build it up before returning it?
+     *          - Assume everything in repo layer and service layer goes right unless exceptions are thrown
      */
 }
