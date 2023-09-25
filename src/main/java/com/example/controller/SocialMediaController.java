@@ -3,9 +3,13 @@ package com.example.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.swing.text.html.Option;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -70,16 +74,24 @@ public class SocialMediaController {
     //failed both tests
     @GetMapping("messages/{message_id}")
     public ResponseEntity<Message> getMessageByID(@PathVariable int messageID){
-        Optional<Message> opt = Optional.ofNullable(ms.getMessageByID(messageID));
-        return opt.isEmpty() ? (
-            ResponseEntity.status(200).build()
-        ) : ResponseEntity.status(200).body(opt.get());
+        //TODO
     }
 
+    @DeleteMapping("messages/{message_id}")
+    public ResponseEntity<Message> deleteMessageByID(@PathVariable int message_id){
+        Optional<Message> delMSG = ms.getMessageByID(message_id);
+        if(delMSG.isEmpty()) return ResponseEntity.status(200).build();
+        ms.deleteMessage(message_id);
+        return ResponseEntity.status(200).body(delMSG.get());
+    }
+
+    @PatchMapping("messages/{message_id}")
+    public ResponseEntity<Message> updateMessageByID(@PathVariable int message_id, @RequestBody Message newMSG){
+
+    }
     /**
      * TODO:
      *      Methods:
-     *          - delete message given ID
      *          - update message given ID
      *          - get all messages given accountID
      *      Debug:

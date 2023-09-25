@@ -27,9 +27,8 @@ public class MessageService {
         return mr.findAll();
     }
 
-    public Message getMessageByID(int id){
-        Optional<Message> opt = mr.findById(id);
-        return opt.isPresent() ? opt.get() : null;
+    public Optional<Message> getMessageByID(int id){
+        return mr.findById(id);
     }
 
     public void deleteMessage(int id){
