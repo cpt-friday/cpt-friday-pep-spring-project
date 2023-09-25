@@ -35,19 +35,26 @@ public class SocialMediaController {
         this.ms = ms;
     }
 
-    // @PostMapping("register")
-    // public ResponseEntity<Account> register(@RequestBody Account acc){
-    //     if(as.accountNameExists(acc.getUsername())){
-    //         return ResponseEntity.status(409).build();
-    //     }
-    //     Optional<Account> opt = as.addAccount(acc);
-    //     return opt.isEmpty() ? (
-    //         ResponseEntity.status(400).build()
-    //     ) : ResponseEntity.status(200).body(opt.get());
-        
-    // }
+    @PostMapping("register")
+    public ResponseEntity<Account> register(@RequestBody Account acc){
+        if(as.accountNameExists(acc.getUsername())) return ResponseEntity.status(409).build();
+        try{
+            Account reg = as.addAccount(acc);
+            return ResponseEntity.status(200).body(reg);
+        } catch(Exception e){
+            return ResponseEntity.status(400).build();
+        }
+    }
 
-    // @PostMapping("login")
+    @PostMapping("login")
+    public ResponseEntity<Account> login(@RequestBody Account acc){
+        try{
+            Account logged = as.getAccountByUsername(acc.getUsername());
+            return ResponseEntity.status(200).body(logged);
+        } catch(Exception e){
+            return ResponseEntity.status(401).build();
+        }
+    }
     // public ResponseEntity<Account> login(@RequestBody Account acc){
     //     Optional<Account> opt = as.getAccountByUsername(acc.getUsername());
     //     if(opt.isEmpty()) return ResponseEntity.status(401).build();

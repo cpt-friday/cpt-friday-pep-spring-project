@@ -41,6 +41,10 @@ public class AccountService {
         return ar.existsById(id);
     }
 
+    public void verifyAccount(String username) throws AccountNotExistsException{
+        
+    }
+
     public Account getAccountByUsername(String username) throws AccountNotExistsException{
         Optional<Account> opt = ar.findByUsername(username);
         if(opt.isEmpty()) throw new AccountNotExistsException("Account with such Username does not exist", new Throwable());
