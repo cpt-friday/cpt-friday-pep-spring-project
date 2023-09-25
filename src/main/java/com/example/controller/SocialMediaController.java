@@ -1,19 +1,18 @@
 package com.example.controller;
 
 import java.util.List;
-import java.util.Optional;
-
-import javax.swing.text.html.Option;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.*;
@@ -49,73 +48,69 @@ public class SocialMediaController {
     @PostMapping("login")
     public ResponseEntity<Account> login(@RequestBody Account acc){
         try{
-            Account logged = as.getAccountByUsername(acc.getUsername());
-            return ResponseEntity.status(200).body(logged);
+            Account base = as.getAccountByUsername(acc.getUsername());
+            if(as.verifyAccount(base, acc)) return ResponseEntity.status(200).body(base);
+            else return ResponseEntity.status(401).build();
         } catch(Exception e){
             return ResponseEntity.status(401).build();
         }
     }
-    // public ResponseEntity<Account> login(@RequestBody Account acc){
-    //     Optional<Account> opt = as.getAccountByUsername(acc.getUsername());
-    //     if(opt.isEmpty()) return ResponseEntity.status(401).build();
-    //     Account logged = opt.get();
-    //     if(!logged.getPassword().equals(acc.getPassword())) return ResponseEntity.status(401).build();
-    //     return ResponseEntity.status(200).body(logged);
-    // }
 
-    // //failed blank message test
-    // @PostMapping("messages")
-    // public ResponseEntity<Message> createMessage(@RequestBody Message msg){
-    //     if(!as.accountExists(msg.getPosted_by())) return ResponseEntity.status(400).build();
-    //     Optional<Message> opt = ms.addMessage(msg);
-    //     return opt.isEmpty() ? (
-    //         ResponseEntity.status(400).build()
-    //     ) : ResponseEntity.status(200).body(opt.get());
-    // }
+    @PostMapping("messages")
+    public ResponseEntity<Message> createMessage(@RequestBody Message msg){
+        try{
+            Account poster = as.getAccountByID(msg.getPosted_by());
+            return ResponseEntity.status(200).body(ms.addMessage(msg));
+        }catch(Exception e){
+            return ResponseEntity.status(400).build();
+        }
+    }
 
-    // @GetMapping("messages")
-    // public ResponseEntity<List<Message>> getAllMessages(){
-    //     return ResponseEntity.status(200).body(ms.getAllMessages());
-    // }
+    @GetMapping("messages")
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody List<Message> getAllMessages(){
+        return ms.getAllMessages();
+    }
 
-    // //failed both tests
-    // @GetMapping("messages/{message_id}")
-    // public ResponseEntity<Message> getMessageByID(@PathVariable int messageID){
-    //     //TODO
-    // }
+    @GetMapping("messages/{message_id}")
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody Message getMessageByID(@PathVariable int message_id){
+        try{
+            return ms.getMessageByID(message_id);
+        } catch(Exception e){
+            return null;
+        }
+    }
 
-    // @DeleteMapping("messages/{message_id}")
-    // public ResponseEntity<Message> deleteMessageByID(@PathVariable int message_id){
-    //     Optional<Message> delMSG = ms.getMessageByID(message_id);
-    //     if(delMSG.isEmpty()) return ResponseEntity.status(200).build();
-    //     ms.deleteMessage(message_id);
-    //     return ResponseEntity.status(200).body(delMSG.get());
-    // }
+    @DeleteMapping("messages/{message_id}")
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody int deleteMessageByID(@PathVariable int message_id){
+        try{
+            Message target = ms.getMessageByID(message_id);
+            ms.deleteMessage(message_id);
+            return 1;
+        } catch (Exception e){
+            return 0;
+        }
+    }
 
-    // @PatchMapping("messages/{message_id}")
-    // public ResponseEntity<Message> updateMessageByID(@PathVariable int message_id, @RequestBody Message newMSG){
+    @PatchMapping("messages/{message_id}")
+    public ResponseEntity<Integer> updateMessageByID(@PathVariable int message_id, @RequestBody Message nMsg){
+        try{
+            ms.updateMessage(message_id, nMsg);
+            return ResponseEntity.status(200).body(1);
+        } catch(Exception e){
+            return ResponseEntity.status(400).build();
+        }
+    }
 
-    // }
-
-    // @GetMapping("accounts/{account_id}/messages")
-    // public ResponseEntity<Message> getMessagesFromAccount(@PathVariable int account_id){
-
-    // }
-
-
-    /**
-     * TODO:
-     *      Methods:
-     *          - update message given ID
-     *          - get all messages given accountID
-     *      Debug:
-     *          - fix blank message create
-     *          - fix get message by ID
-     * 
-     * 
-     * 
-     *      Strategies:
-     *          - Make ResponseEntity and build it up before returning it?
-     *          - Assume everything in repo layer and service layer goes right unless exceptions are thrown
-     */
+    @GetMapping("accounts/{account_id}/messages")
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody List<Message> getMessagesFromUser(@PathVariable int account_id){
+        try{
+            return ms.getByUserKey(account_id);
+        } catch(Exception e){
+            return null;
+        }
+    }
 }

@@ -4,15 +4,18 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.entity.Account;
 import com.example.entity.Message;
 import com.example.repository.*;
 import com.example.exception.*;
 
 @Service
 public class MessageService {
+    AccountRepository ar;
     MessageRepository mr;
     @Autowired
-    public MessageService(MessageRepository mr){
+    public MessageService(AccountRepository ar, MessageRepository mr){
+        this.ar = ar;
         this.mr = mr;
     }
 
@@ -31,6 +34,12 @@ public class MessageService {
         return opt.get();
     }
 
+    public List<Message> getByUserKey(int postedBy) throws AccountNotExistsException{
+        Optional<Account> opt = ar.findById(postedBy);
+        if(opt.isEmpty()) throw new AccountNotExistsException("Account cannot be found, messages unable to be retrieved", new Throwable());
+        return mr.findAllPostedBy(postedBy);
+    }
+
     public void deleteMessage(int id){
         mr.deleteById(id);
     }
@@ -40,9 +49,7 @@ public class MessageService {
         if(opt.isEmpty()) throw new MessageNotExistsException("Message with ID doesn't exist, cannot be updated", new Throwable());
         if(nMsg.getMessage_text().isBlank() || nMsg.getMessage_text().length() >= 255) throw new InvalidContentsException("Invalid contents for message to be updated", new Throwable());
         Message msg = opt.get();
-        if(msg.getPosted_by() != nMsg.getPosted_by()) throw new DifferentAccountPostingException("Updates to a message can only be done if the incoming message is posted by the same account", new Throwable());
         msg.setMessage_text(nMsg.getMessage_text());
-        msg.setTime_posted_epoch(nMsg.getTime_posted_epoch());
         mr.save(msg);
     }
     

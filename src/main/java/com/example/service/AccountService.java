@@ -41,8 +41,11 @@ public class AccountService {
         return ar.existsById(id);
     }
 
-    public void verifyAccount(String username) throws AccountNotExistsException{
-        
+    public boolean verifyAccount(Account base, Account log){
+        return (
+            base.getUsername().equals(log.getUsername()) &&
+            base.getPassword().equals(log.getPassword())
+        );
     }
 
     public Account getAccountByUsername(String username) throws AccountNotExistsException{
